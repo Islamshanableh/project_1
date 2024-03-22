@@ -31,14 +31,6 @@ services:
       - 80:3000
       - 443:4443
       - 5555:5555
-  admin:
-    build:
-      context: ../numa-admin/.
-    container_name: admin
-    hostname: admin
-    ports:
-      - 3000:80
-      - 4433:443
     volumes:
       - ./nginx/conf/:/etc/nginx/conf.d/:rw
       - ./certbot/www:/var/www/certbot/:rw
