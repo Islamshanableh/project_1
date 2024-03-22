@@ -25,6 +25,30 @@ model User {
   updatedAt DateTime    @updatedAt @db.Date
 }
 
+model Section {
+  id        Int      @id @default(autoincrement())
+  title     String   @unique @db.VarChar(320)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @db.Date
+}
+
+model CheckList {
+  id        Int      @id @default(autoincrement())
+  title     String   @unique @db.VarChar(320)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @db.Date
+}
+
+model Material {
+  id        Int      @id @default(autoincrement())
+  title     String   @unique @db.VarChar(320)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @db.Date
+}
+
 enum UserStatus {
   APPROVED
   PENDING
