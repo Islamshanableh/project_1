@@ -1,0 +1,48 @@
+version: '3.4'
+services:
+  dbApi:
+    image: mysql:latest
+    container_name: dbApi
+    hostname: dbApi
+    cap_add:
+      - SYS_NICE
+    volumes:
+      - ../data/db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=Thisis@dmin
+    ports:
+      - 3307:3307
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+  api:
+    build:
+      context: .
+    container_name: api
+    hostname: api
+    links:
+      - dbApi
+    depends_on:
+      - dbApi
+    ports:
+      - 80:3000
+      - 443:4443
+      - 5555:5555
+  admin:
+    build:
+      context: ../numa-admin/.
+    container_name: admin
+    hostname: admin
+    ports:
+      - 3000:80
+      - 4433:443
+    volumes:
+      - ./nginx/conf/:/etc/nginx/conf.d/:rw
+      - ./certbot/www:/var/www/certbot/:rw
+      - ./certbot/conf/:/etc/nginx/ssl/:rw
+
+volumes:
+  db_data: {}

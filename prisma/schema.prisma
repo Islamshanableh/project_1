@@ -1,0 +1,36 @@
+generator client {
+  provider          = "prisma-client-js"
+  previewFeatures   = ["orderByNulls", "fullTextSearch", "filteredRelationCount"]
+  max               = 5000
+  connectionTimeout = 0
+  replicas          = 1
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int         @id @default(autoincrement())
+  email     String      @unique @db.VarChar(320)
+  firstName String?     @db.VarChar(65)
+  lastName  String?     @db.VarChar(65)
+  password  String?     @db.VarChar(255)
+  mobile    String?     @unique @db.VarChar(20)
+  status    UserStatus?
+  role      UserRole?
+  isActive  Boolean     @default(true)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt @db.Date
+}
+
+enum UserStatus {
+  APPROVED
+  PENDING
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
