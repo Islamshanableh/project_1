@@ -1,6 +1,6 @@
 generator client {
   provider          = "prisma-client-js"
-  previewFeatures   = ["orderByNulls", "fullTextSearch", "filteredRelationCount"]
+  previewFeatures   = ["fullTextSearch"]
   max               = 5000
   connectionTimeout = 0
   replicas          = 1
@@ -20,6 +20,8 @@ model User {
   mobile    String?     @unique @db.VarChar(20)
   status    UserStatus?
   role      UserRole?
+  ticket    Ticket[]
+  sections  Section[]
   isActive  Boolean     @default(true)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt @db.Date
@@ -28,6 +30,8 @@ model User {
 model Section {
   id        Int      @id @default(autoincrement())
   title     String   @unique @db.VarChar(320)
+  users     User[]
+  ticket    Ticket[]
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @db.Date
@@ -49,6 +53,19 @@ model Material {
   updatedAt DateTime @updatedAt @db.Date
 }
 
+model Ticket {
+  id        Int           @id @default(autoincrement())
+  title     String
+  fields    Json?
+  status    TicketStatus? @default(PENDING)
+  userId    Int?
+  user      User?         @relation(fields: [userId], references: [id])
+  sectionId Int
+  section   Section       @relation(fields: [sectionId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 enum UserStatus {
   APPROVED
   PENDING
@@ -57,4 +74,10 @@ enum UserStatus {
 enum UserRole {
   ADMIN
   USER
+}
+
+enum TicketStatus {
+  INPROGRESS
+  PENDING
+  DONE
 }

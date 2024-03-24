@@ -125,6 +125,9 @@ exports.getSectionList = async () => {
     where: {
       isActive: true,
     },
+    include: {
+      ticket: true,
+    },
   });
 
   return result;

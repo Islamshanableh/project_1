@@ -6,7 +6,7 @@ const { userService } = require('../services');
 // const { errorMessage } = require('../utils/helpers');
 
 exports.getUserById = catchAsync(async (req, res) => {
-  const id = req?.query?.id;
+  const id = req?.user?.sub?.id;
 
   const result = await userService.getUserById(id);
   res.status(httpStatus.OK).send({ result });
@@ -34,8 +34,8 @@ exports.userList = catchAsync(async (req, res) => {
 });
 
 exports.approveUser = catchAsync(async (req, res) => {
-  const id = req?.query?.id;
+  const payload = req?.body;
 
-  const result = await userService.approveUserById(id);
+  const result = await userService.approveUserById(payload);
   res.status(httpStatus.OK).send({ result });
 });

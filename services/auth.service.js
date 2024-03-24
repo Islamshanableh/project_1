@@ -11,6 +11,10 @@ const getUserDetail = async payload => {
     where: {
       email: payload.email,
     },
+    include: {
+      sections: true,
+      ticket: true,
+    },
   });
 
   if (user.status === 'PENDING') {

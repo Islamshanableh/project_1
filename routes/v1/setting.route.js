@@ -34,9 +34,7 @@ router
     settingController.deleteSection,
   );
 
-router
-  .route('/section/list')
-  .get(auth(routePermissions.ADMIN.read), settingController.getSectionList);
+router.route('/section/list').get(auth(), settingController.getSectionList);
 
 router
   .route('/checkList')

@@ -58,17 +58,33 @@ exports.getUserById = async id => {
     where: {
       id,
     },
+    include: {
+      sections: {
+        include: {
+          ticket: {
+            where: {
+              userId: id,
+            },
+          },
+        },
+      },
+    },
   });
 
   return result;
 };
 
-exports.approveUserById = async id => {
+exports.approveUserById = async payload => {
   const result = await prisma.user.update({
     where: {
-      id,
+      id: payload?.id,
     },
-    data: { status: 'APPROVED' },
+    data: {
+      status: 'APPROVED',
+      sections: {
+        connect: payload.sectionsIds.map(sectionId => ({ id: sectionId })),
+      },
+    },
   });
 
   return result;

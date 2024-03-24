@@ -13,7 +13,7 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(auth(), validate(userValidation.getById), userController.getUserById)
+  .get(auth(), userController.getUserById)
   .put(auth(), validate(userValidation.update), userController.updateUser)
   .delete(auth(), validate(userValidation.getById), userController.deleteUser);
 
@@ -29,7 +29,7 @@ router
   .route('/approve')
   .put(
     auth(routePermissions.ADMIN.update),
-    validate(userValidation.getById),
+    validate(userValidation.approveUser),
     userController.approveUser,
   );
 

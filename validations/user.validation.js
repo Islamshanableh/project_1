@@ -20,3 +20,10 @@ exports.update = {
     email: Joi.string().email().max(320),
   }),
 };
+
+exports.approveUser = {
+  body: Joi.object().keys({
+    id: Joi.number().required(),
+    sectionsIds: Joi.array().items(Joi.number().required()).required(),
+  }),
+};

@@ -5,6 +5,7 @@ const router = express.Router();
 const authRoute = require('./auth.route');
 const userRoute = require('./user.route');
 const settingRoute = require('./setting.route');
+const ticketRoute = require('./ticket.route');
 
 const defaultRoutes = [
   {
@@ -18,6 +19,10 @@ const defaultRoutes = [
   {
     path: '/setting',
     route: settingRoute,
+  },
+  {
+    path: '/ticket',
+    route: ticketRoute,
   },
 ];
 
