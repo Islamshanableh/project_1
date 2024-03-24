@@ -17,15 +17,17 @@ const getUserDetail = async payload => {
     },
   });
 
-  if (user.status === 'PENDING') {
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'user not found');
+  }
+
+  if (user?.status === 'PENDING') {
     throw new ApiError(httpStatus.BAD_REQUEST, 'You need to approve by admin');
   }
 
   if (user) {
     return user;
   }
-
-  throw new ApiError(httpStatus.NOT_FOUND, 'user not found');
 };
 
 exports.loginByEmailAndPassword = async ({ email, password }) => {
