@@ -146,7 +146,7 @@ exports.getSectionList = async search => {
     where: {
       isActive: true,
       ticket: {
-        every: {
+        some: {
           title: {
             contains: search,
           },
