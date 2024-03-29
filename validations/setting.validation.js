@@ -24,3 +24,13 @@ exports.updateSection = {
     id: Joi.number(),
   }),
 };
+
+exports.update = {
+  body: Joi.object().keys({
+    title: Joi.string(),
+    order: Joi.number(),
+  }),
+  query: Joi.object().keys({
+    id: Joi.number(),
+  }),
+};

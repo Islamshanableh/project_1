@@ -50,7 +50,7 @@ router
   )
   .put(
     auth(routePermissions.ADMIN.update),
-    validate(settingValidation.updateSection),
+    validate(settingValidation.update),
     settingController.updateCheckList,
   )
   .delete(
@@ -77,7 +77,7 @@ router
   )
   .put(
     auth(routePermissions.ADMIN.update),
-    validate(settingValidation.updateSection),
+    validate(settingValidation.update),
     settingController.updateMaterial,
   )
   .delete(
