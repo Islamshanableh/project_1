@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const { Prisma } = require('@prisma/client');
 const { prisma } = require('./prisma.service');
 const ApiError = require('../utils/ApiError');
+const config = require('../config/config');
 
 exports.createSection = async payload => {
   const result = await prisma.section
@@ -126,8 +127,40 @@ exports.getSectionList = async () => {
       isActive: true,
     },
     include: {
-      ticket: true,
+      ticket: {
+        include: {
+          comment: {
+            where: {
+              isActive: true,
+              isDeleted: false,
+            },
+          },
+          media: {
+            where: {
+              isActive: true,
+              isDeleted: false,
+            },
+          },
+        },
+      },
     },
+  });
+
+  result?.map(async item => {
+    const newItem = item;
+    newItem?.ticket?.map(async itemTicket => {
+      if (itemTicket?.media?.length) {
+        itemTicket?.media?.map(async itemMedia => {
+          if (itemMedia?.link) {
+            itemMedia.link = `${config.aws.prefix}${itemMedia.link}`;
+          }
+          return itemMedia;
+        });
+      }
+      return itemTicket;
+    });
+
+    return item;
   });
 
   return result;

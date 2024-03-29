@@ -26,6 +26,7 @@ const envVarsSchema = Joi.object()
     AWS_BUCKET_NAME_UPLOAD: Joi.string().required(),
     AWS_REGION: Joi.string().required(),
     AWS_EXP_IN: Joi.number().required(),
+    AWS_PREFIX: Joi.string().required(),
   })
   .unknown();
 
@@ -57,5 +58,6 @@ module.exports = {
     bucket_name: envVars.AWS_BUCKET_NAME_UPLOAD,
     region: envVars.AWS_REGION,
     exp_in: envVars.AWS_EXP_IN,
+    prefix: envVars.AWS_PREFIX,
   },
 };

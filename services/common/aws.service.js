@@ -15,15 +15,13 @@ const GetS3Obj = () => {
   return s3;
 };
 
-exports.GetSignedUrl = async (Key, increaseExpire) => {
+exports.GetSignedUrl = async Key => {
   const s3obj = GetS3Obj();
 
   const presignedGETURL = await s3obj.getSignedUrlPromise('getObject', {
     Bucket: config.aws.bucket_name,
     Key, // filename
-    Expires: increaseExpire
-      ? config?.aws?.extra_expires_access
-      : config?.aws?.expires_access, // time to expire in seconds
+    Expires: config.aws.exp_in, // time to expire in seconds
   });
 
   return presignedGETURL;

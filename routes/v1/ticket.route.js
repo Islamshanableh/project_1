@@ -32,6 +32,14 @@ router
 router.route('/upload').post(auth(), ticketController.uploadFilesTicket);
 
 router
+  .route('/file')
+  .delete(
+    auth(),
+    validate(ticketValidation.getById),
+    ticketController.deleteFile,
+  );
+
+router
   .route('/comment')
   .delete(
     auth(),

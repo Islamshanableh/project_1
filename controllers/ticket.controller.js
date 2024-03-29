@@ -47,3 +47,8 @@ exports.deleteComment = catchAsync(async (req, res) => {
   });
   res.status(httpStatus.OK).send({ result });
 });
+
+exports.deleteFile = catchAsync(async (req, res) => {
+  const result = await ticketService.deleteFile(req?.query?.id);
+  res.status(httpStatus.OK).send({ result });
+});

@@ -28,6 +28,9 @@ exports.updateTicket = async payload => {
       fields: payload.fields,
       sectionId: payload.sectionId,
       userId: payload.userId,
+      media: {
+        create: payload?.files?.map(file => ({ link: file })),
+      },
     },
   });
 
@@ -46,7 +49,12 @@ exports.getTicketById = async id => {
           isDeleted: false,
         },
       },
-      media: true,
+      media: {
+        where: {
+          isActive: true,
+          isDeleted: false,
+        },
+      },
     },
   });
 
@@ -76,7 +84,22 @@ exports.uploadFiles = async (files, ticketId) => {
       ticketFiles.push(upload?.Key);
     }
   }
+
   return ticketFiles;
+};
+
+exports.deleteFile = async id => {
+  const result = await prisma.media.update({
+    where: {
+      id,
+    },
+    data: {
+      isActive: false,
+      isDeleted: true,
+    },
+  });
+
+  return result;
 };
 
 exports.createComment = async payload => {
