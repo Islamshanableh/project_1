@@ -93,7 +93,8 @@ exports.getMaterial = catchAsync(async (req, res) => {
 });
 
 exports.getSectionList = catchAsync(async (req, res) => {
-  const result = await settingService.getSectionList();
+  const search = req?.query?.search;
+  const result = await settingService.getSectionList(search);
   res.status(httpStatus.OK).send({ result });
 });
 

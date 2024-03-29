@@ -25,7 +25,7 @@ router
   )
   .put(
     auth(routePermissions.ADMIN.update),
-    validate(settingValidation.create),
+    validate(settingValidation.updateSection),
     settingController.updateSection,
   )
   .delete(

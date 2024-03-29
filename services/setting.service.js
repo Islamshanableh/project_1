@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 const httpStatus = require('http-status');
 const { Prisma } = require('@prisma/client');
 const { prisma } = require('./prisma.service');
@@ -5,9 +6,28 @@ const ApiError = require('../utils/ApiError');
 const config = require('../config/config');
 
 exports.createSection = async payload => {
+  let order = 0;
+  if (!payload.order) {
+    const findOrder = await prisma.section.findMany({
+      where: {
+        order: {
+          gte: payload.order,
+        },
+      },
+      orderBy: {
+        order: 'desc',
+      },
+      take: 1,
+    });
+    order = findOrder[0]?.order + 1;
+  }
+
   const result = await prisma.section
     .create({
-      data: payload,
+      data: {
+        ...payload,
+        order,
+      },
     })
     .catch(e => {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -121,10 +141,17 @@ exports.createMaterial = async payload => {
   return result;
 };
 
-exports.getSectionList = async () => {
+exports.getSectionList = async search => {
   const result = await prisma.section.findMany({
     where: {
       isActive: true,
+      ticket: {
+        every: {
+          title: {
+            contains: search,
+          },
+        },
+      },
     },
     include: {
       ticket: {
@@ -154,6 +181,9 @@ exports.getSectionList = async () => {
           },
         },
       },
+    },
+    orderBy: {
+      order: 'asc',
     },
   });
 
@@ -267,6 +297,32 @@ exports.deleteMaterial = async id => {
 };
 
 exports.updateSection = async payload => {
+  if (payload.order) {
+    const findOrder = await prisma.section.findMany({
+      where: {
+        order: {
+          gte: payload.order,
+        },
+      },
+      orderBy: {
+        order: 'asc',
+      },
+    });
+
+    if (findOrder.length) {
+      for await (const item of findOrder) {
+        await prisma.section.update({
+          where: {
+            id: item.id,
+          },
+          data: {
+            order: item.order + 1,
+          },
+        });
+      }
+    }
+  }
+
   const result = await prisma.section
     .update({
       where: {

@@ -53,18 +53,13 @@ const findObjectDifferences = async (obj1, obj2) => {
           newValue: obj2[key],
         };
       }
-    } else {
-      differences[key] = {
-        oldValue: obj1[key],
-        newValue: obj2[key] || 'undefined',
-      };
     }
   }
 
   for (const key in obj2) {
     if (!obj1.hasOwnProperty(key)) {
       differences[key] = {
-        oldValue: 'undefined',
+        oldValue: 'new field added',
         newValue: obj2[key],
       };
     }
