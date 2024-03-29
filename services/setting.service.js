@@ -175,13 +175,22 @@ exports.getSectionList = async search => {
   const result = await prisma.section.findMany({
     where: {
       isActive: true,
-      ticket: {
-        some: {
-          title: {
-            contains: search,
+      OR: [
+        {
+          ticket: {
+            some: {
+              title: {
+                contains: search,
+              },
+            },
           },
         },
-      },
+        {
+          ticket: {
+            every: {},
+          },
+        },
+      ],
     },
     include: {
       ticket: {
@@ -247,6 +256,9 @@ exports.getCheckList = async () => {
     where: {
       isActive: true,
     },
+    orderBy: {
+      order: 'asc',
+    },
   });
 
   return result;
@@ -256,6 +268,9 @@ exports.getMaterialList = async () => {
   const result = await prisma.material.findMany({
     where: {
       isActive: true,
+    },
+    orderBy: {
+      order: 'asc',
     },
   });
 
@@ -333,29 +348,18 @@ exports.deleteMaterial = async id => {
 
 exports.updateSection = async payload => {
   if (payload.order) {
-    const findOrder = await prisma.section.findMany({
+    await prisma.section.updateMany({
       where: {
         order: {
           gte: payload.order,
         },
       },
-      orderBy: {
-        order: 'asc',
+      data: {
+        order: {
+          increment: 1,
+        },
       },
     });
-
-    if (findOrder.length) {
-      for await (const item of findOrder) {
-        await prisma.section.update({
-          where: {
-            id: item.id,
-          },
-          data: {
-            order: item.order + 1,
-          },
-        });
-      }
-    }
   }
 
   const result = await prisma.section
@@ -401,29 +405,18 @@ exports.updateSection = async payload => {
 
 exports.updateCheckList = async payload => {
   if (payload.order) {
-    const findOrder = await prisma.checkList.findMany({
+    await prisma.checkList.updateMany({
       where: {
         order: {
           gte: payload.order,
         },
       },
-      orderBy: {
-        order: 'asc',
+      data: {
+        order: {
+          increment: 1,
+        },
       },
     });
-
-    if (findOrder.length) {
-      for await (const item of findOrder) {
-        await prisma.checkList.update({
-          where: {
-            id: item.id,
-          },
-          data: {
-            order: item.order + 1,
-          },
-        });
-      }
-    }
   }
   const result = await prisma.checkList
     .update({
@@ -468,29 +461,18 @@ exports.updateCheckList = async payload => {
 
 exports.updateMaterial = async payload => {
   if (payload.order) {
-    const findOrder = await prisma.material.findMany({
+    await prisma.material.updateMany({
       where: {
         order: {
           gte: payload.order,
         },
       },
-      orderBy: {
-        order: 'asc',
+      data: {
+        order: {
+          increment: 1,
+        },
       },
     });
-
-    if (findOrder.length) {
-      for await (const item of findOrder) {
-        await prisma.material.update({
-          where: {
-            id: item.id,
-          },
-          data: {
-            order: item.order + 1,
-          },
-        });
-      }
-    }
   }
   const result = await prisma.material
     .update({
