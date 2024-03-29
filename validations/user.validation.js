@@ -24,6 +24,7 @@ exports.update = {
 exports.approveUser = {
   body: Joi.object().keys({
     id: Joi.number().required(),
+    role: Joi.string().required().valid('ADMIN', 'USER'),
     sectionsIds: Joi.array().items(Joi.number().required()).required(),
   }),
 };

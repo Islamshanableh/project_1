@@ -81,6 +81,7 @@ exports.approveUserById = async payload => {
     },
     data: {
       status: 'APPROVED',
+      role: payload?.role || 'USER',
       sections: {
         connect: payload.sectionsIds.map(sectionId => ({ id: sectionId })),
       },

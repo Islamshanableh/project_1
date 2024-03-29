@@ -56,3 +56,27 @@ exports.uploadFile = async (file, Key) => {
     throw new ApiError(httpStatus.BAD_REQUEST, err);
   }
 };
+
+exports.deleteFile = async fileKey => {
+  const s3obj = GetS3Obj();
+  const params = {
+    Bucket: config.aws.bucket_name,
+    Key: fileKey,
+  };
+
+  s3obj.headObject(params, err => {
+    if (err) {
+      console.error('Error retrieving object metadata:', err);
+      return;
+    }
+
+    s3obj.deleteObject(params, (err, data) => {
+      if (err) {
+        console.error('Error deleting file:', err);
+        return;
+      }
+
+      console.log('File deleted successfully:', data);
+    });
+  });
+};

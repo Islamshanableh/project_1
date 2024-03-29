@@ -3,7 +3,7 @@ const cuid = require('cuid');
 const httpStatus = require('http-status');
 const { prisma } = require('./prisma.service');
 const ApiError = require('../utils/ApiError');
-const { uploadFile } = require('./common/aws.service');
+const { uploadFile, deleteFile } = require('./common/aws.service');
 
 exports.createTicket = async payload => {
   const result = await prisma.ticket.create({
@@ -95,6 +95,10 @@ exports.deleteFile = async id => {
       isDeleted: true,
     },
   });
+
+  if (result?.link) {
+    await deleteFile(result.link);
+  }
 
   return result;
 };
