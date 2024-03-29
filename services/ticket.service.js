@@ -12,6 +12,9 @@ exports.createTicket = async payload => {
       fields: payload.fields,
       sectionId: payload.sectionId,
       userId: payload.userId,
+      media: {
+        create: payload?.files?.map(file => ({ link: file })),
+      },
     },
   });
 
@@ -61,26 +64,20 @@ exports.getTicketById = async id => {
   return result;
 };
 
-exports.uploadFiles = async (files, ticketId) => {
+exports.uploadFiles = async files => {
   const ticketFiles = [];
   if (typeof files === 'object') {
     if (files?.files?.length) {
       await Promise.all(
         files?.files?.map(async file => {
           const fileName = `${cuid()}-${file.name}`;
-          const upload = await uploadFile(
-            file.data,
-            `tickets/${ticketId}/${fileName}`,
-          );
+          const upload = await uploadFile(file.data, `tickets/${fileName}`);
           ticketFiles.push(upload?.Key);
         }),
       );
     } else {
       const fileName = `${cuid()}-${files.name}`;
-      const upload = await uploadFile(
-        files.data,
-        `tickets/${ticketId}/${fileName}`,
-      );
+      const upload = await uploadFile(files.data, `tickets/${fileName}`);
       ticketFiles.push(upload?.Key);
     }
   }
