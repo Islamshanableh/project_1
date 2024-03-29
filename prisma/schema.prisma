@@ -22,6 +22,7 @@ model User {
   role      UserRole?
   ticket    Ticket[]
   sections  Section[]
+  comment   Comment[]
   isActive  Boolean     @default(true)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt @db.Date
@@ -57,11 +58,37 @@ model Ticket {
   id        Int           @id @default(autoincrement())
   title     String
   fields    Json?
+  media     Media[]
+  comment   Comment[]
   status    TicketStatus? @default(PENDING)
   userId    Int?
   user      User?         @relation(fields: [userId], references: [id])
   sectionId Int
   section   Section       @relation(fields: [sectionId], references: [id])
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model Media {
+  id           Int   @id @default(autoincrement())
+  originalLink String?  @db.LongText
+  ticketId     Int
+  ticket       Ticket   @relation(fields: [ticketId], references: [id])
+  isActive     Boolean  @default(true)
+  isDeleted    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Comment {
+  id        Int   @id @default(autoincrement())
+  content   String   @db.LongText
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  ticketId  Int
+  ticket    Ticket   @relation(fields: [ticketId], references: [id])
+  isDeleted Boolean  @default(false)
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

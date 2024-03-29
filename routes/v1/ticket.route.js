@@ -29,4 +29,24 @@ router
     ticketController.updateTicket,
   );
 
+router.route('/upload').post(auth(), ticketController.uploadFilesTicket);
+
+router
+  .route('/comment')
+  .delete(
+    auth(),
+    validate(ticketValidation.getById),
+    ticketController.deleteComment,
+  )
+  .post(
+    auth(),
+    validate(ticketValidation.createComment),
+    ticketController.createComment,
+  )
+  .put(
+    auth(),
+    validate(ticketValidation.updateComment),
+    ticketController.updateComment,
+  );
+
 module.exports = router;
