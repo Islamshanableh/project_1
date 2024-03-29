@@ -12,20 +12,21 @@ datasource db {
 }
 
 model User {
-  id        Int         @id @default(autoincrement())
-  email     String      @unique @db.VarChar(320)
-  firstName String?     @db.VarChar(65)
-  lastName  String?     @db.VarChar(65)
-  password  String?     @db.VarChar(255)
-  mobile    String?     @unique @db.VarChar(20)
-  status    UserStatus?
-  role      UserRole?
-  ticket    Ticket[]
-  sections  Section[]
-  comment   Comment[]
-  isActive  Boolean     @default(true)
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt @db.Date
+  id         Int          @id @default(autoincrement())
+  email      String       @unique @db.VarChar(320)
+  firstName  String?      @db.VarChar(65)
+  lastName   String?      @db.VarChar(65)
+  password   String?      @db.VarChar(255)
+  mobile     String?      @unique @db.VarChar(20)
+  status     UserStatus?
+  role       UserRole?
+  ticket     Ticket[]
+  sections   Section[]
+  comment    Comment[]
+  historyLog HistoryLog[]
+  isActive   Boolean      @default(true)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt @db.Date
 }
 
 model Section {
@@ -57,18 +58,19 @@ model Material {
 }
 
 model Ticket {
-  id        Int           @id @default(autoincrement())
-  title     String
-  fields    Json?
-  media     Media[]
-  comment   Comment[]
-  status    TicketStatus? @default(PENDING)
-  userId    Int?
-  user      User?         @relation(fields: [userId], references: [id])
-  sectionId Int
-  section   Section       @relation(fields: [sectionId], references: [id])
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  id         Int           @id @default(autoincrement())
+  title      String
+  fields     Json?
+  media      Media[]
+  comment    Comment[]
+  historyLog HistoryLog[]
+  status     TicketStatus? @default(PENDING)
+  userId     Int?
+  user       User?         @relation(fields: [userId], references: [id])
+  sectionId  Int
+  section    Section       @relation(fields: [sectionId], references: [id])
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
 }
 
 model Media {
@@ -93,6 +95,19 @@ model Comment {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model HistoryLog {
+  id          Int      @id @default(autoincrement())
+  differences Json?
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  ticketId    Int
+  ticket      Ticket   @relation(fields: [ticketId], references: [id])
+  isDeleted   Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 enum UserStatus {

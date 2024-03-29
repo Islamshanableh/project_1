@@ -141,6 +141,17 @@ exports.getSectionList = async () => {
               isDeleted: false,
             },
           },
+          historyLog: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                },
+              },
+            },
+          },
         },
       },
     },

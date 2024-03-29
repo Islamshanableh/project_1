@@ -1,3 +1,6 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-prototype-builtins */
 /* eslint-disable no-param-reassign */
 const cuid = require('cuid');
 const httpStatus = require('http-status');
@@ -21,7 +24,113 @@ exports.createTicket = async payload => {
   return result;
 };
 
-exports.updateTicket = async payload => {
+const findObjectDifferences = async (obj1, obj2) => {
+  const differences = {};
+
+  for (const key in obj1) {
+    if (obj1.hasOwnProperty(key) && obj2.hasOwnProperty(key)) {
+      if (Array.isArray(obj1[key]) && Array.isArray(obj2[key])) {
+        if (JSON.stringify(obj1[key]) !== JSON.stringify(obj2[key])) {
+          differences[key] = {
+            oldValue: obj1[key],
+            newValue: obj2[key],
+          };
+        }
+      } else if (
+        typeof obj1[key] === 'object' &&
+        typeof obj2[key] === 'object'
+      ) {
+        const nestedDifferences = await findObjectDifferences(
+          obj1[key],
+          obj2[key],
+        );
+        if (Object.keys(nestedDifferences).length > 0) {
+          differences[key] = nestedDifferences;
+        }
+      } else if (obj1[key] !== obj2[key]) {
+        differences[key] = {
+          oldValue: obj1[key],
+          newValue: obj2[key],
+        };
+      }
+    } else {
+      differences[key] = {
+        oldValue: obj1[key],
+        newValue: obj2[key] || 'undefined',
+      };
+    }
+  }
+
+  for (const key in obj2) {
+    if (!obj1.hasOwnProperty(key)) {
+      differences[key] = {
+        oldValue: 'undefined',
+        newValue: obj2[key],
+      };
+    }
+  }
+
+  return differences;
+};
+
+exports.updateTicket = async (payload, userId) => {
+  const findTicket = await prisma.ticket.findUnique({
+    where: { id: payload?.id },
+    include: {
+      section: {
+        select: {
+          id: true,
+          title: true,
+        },
+      },
+    },
+  });
+  if (!findTicket) {
+    throw new ApiError(httpStatus.FORBIDDEN, 'ticket not found');
+  }
+  let differences = {};
+  const findDifferences = await findObjectDifferences(
+    findTicket.fields,
+    payload.fields,
+  );
+
+  if (Object.keys(findDifferences).length > 0) {
+    differences = findDifferences;
+  }
+
+  if (
+    payload.sectionId &&
+    Number(findTicket.sectionId) !== Number(payload?.sectionId || 0)
+  ) {
+    const findSection = await prisma.section.findUnique({
+      where: {
+        id: payload.sectionId,
+      },
+    });
+    differences.changeSection = {
+      oldSection: findTicket.section.title,
+      newSection: findSection.title,
+    };
+  }
+
+  if (Object.keys(differences).length > 0) {
+    await prisma.historyLog.create({
+      data: {
+        user: {
+          connect: {
+            id: userId,
+          },
+        },
+        ticket: {
+          connect: {
+            id: payload.id,
+          },
+        },
+        differences,
+      },
+    });
+  }
+
   const result = await prisma.ticket.update({
     where: {
       id: payload.id,
@@ -58,6 +167,17 @@ exports.getTicketById = async id => {
           isDeleted: false,
         },
       },
+      historyLog: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
+      },
     },
   });
 
@@ -76,8 +196,11 @@ exports.uploadFiles = async files => {
         }),
       );
     } else {
-      const fileName = `${cuid()}-${files.name}`;
-      const upload = await uploadFile(files.data, `tickets/${fileName}`);
+      const fileName = `${cuid()}-${files?.files?.name}`;
+      const upload = await uploadFile(
+        files?.files?.data,
+        `tickets/${fileName}`,
+      );
       ticketFiles.push(upload?.Key);
     }
   }
@@ -107,9 +230,6 @@ exports.createComment = async payload => {
   const result = await prisma.comment.create({
     data: {
       ...payload,
-      ticketId: payload.ticketId,
-      content: payload.content,
-      userId: payload.userId,
     },
   });
 

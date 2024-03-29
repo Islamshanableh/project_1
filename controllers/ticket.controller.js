@@ -12,8 +12,9 @@ exports.createTicket = catchAsync(async (req, res) => {
 
 exports.updateTicket = catchAsync(async (req, res) => {
   const payload = req?.body;
+  const userId = req?.user?.sub?.id;
 
-  const result = await ticketService.updateTicket(payload);
+  const result = await ticketService.updateTicket(payload, userId);
   res.status(httpStatus.OK).send({ result });
 });
 
