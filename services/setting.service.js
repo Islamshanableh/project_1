@@ -205,6 +205,15 @@ exports.getSectionList = async search => {
               isActive: true,
               isDeleted: false,
             },
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                },
+              },
+            },
           },
           media: {
             where: {
