@@ -226,6 +226,15 @@ exports.createComment = async payload => {
     data: {
       ...payload,
     },
+    include: {
+      user: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+        },
+      },
+    },
   });
 
   return result;
@@ -254,6 +263,15 @@ exports.updateComment = async payload => {
       },
       data: {
         content: payload.content,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
       },
     });
 
