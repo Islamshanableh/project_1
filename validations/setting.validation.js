@@ -18,7 +18,7 @@ exports.getById = {
 exports.updateSection = {
   body: Joi.object().keys({
     title: Joi.string(),
-    order: Joi.number().min(3),
+    order: Joi.number(),
   }),
   query: Joi.object().keys({
     id: Joi.number(),

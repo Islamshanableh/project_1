@@ -187,7 +187,40 @@ exports.getSectionList = async search => {
         },
         {
           ticket: {
-            every: {},
+            some: {
+              fields: {
+                path: '$.phone',
+                string_contains: search,
+              },
+            },
+          },
+        },
+        {
+          ticket: {
+            some: {
+              fields: {
+                path: '$.serialNoCharger',
+                string_contains: search,
+              },
+            },
+          },
+        },
+        {
+          ticket: {
+            some: {
+              fields: {
+                path: '$.serialNoPoint',
+                string_contains: search,
+              },
+            },
+          },
+        },
+
+        {
+          ticket: {
+            every: {
+              isActive: true,
+            },
           },
         },
       ],
@@ -195,9 +228,32 @@ exports.getSectionList = async search => {
     include: {
       ticket: {
         where: {
-          title: {
-            contains: search,
-          },
+          OR: [
+            {
+              title: {
+                contains: search,
+              },
+            },
+            {
+              fields: {
+                path: '$.phone',
+                string_contains: search,
+              },
+            },
+            {
+              fields: {
+                path: '$.serialNoCharger',
+                string_contains: search,
+              },
+            },
+            {
+              fields: {
+                path: '$.serialNoPoint',
+                string_contains: search,
+              },
+            },
+          ],
+          isActive: true,
         },
         include: {
           comment: {

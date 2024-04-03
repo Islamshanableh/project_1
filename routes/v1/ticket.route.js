@@ -23,10 +23,11 @@ router
     validate(ticketValidation.createTicket),
     ticketController.createTicket,
   )
-  .put(
-    auth(),
-    validate(ticketValidation.update),
-    ticketController.updateTicket,
+  .put(auth(), validate(ticketValidation.update), ticketController.updateTicket)
+  .delete(
+    auth(routePermissions.ADMIN.update),
+    validate(ticketValidation.getById),
+    ticketController.deleteTicket,
   );
 
 router.route('/upload').post(auth(), ticketController.uploadFilesTicket);

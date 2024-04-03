@@ -23,6 +23,11 @@ exports.getTicketById = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ result });
 });
 
+exports.deleteTicket = catchAsync(async (req, res) => {
+  const result = await ticketService.deleteTicket(req?.query?.id);
+  res.status(httpStatus.OK).send({ result });
+});
+
 exports.uploadFilesTicket = catchAsync(async (req, res) => {
   const result = await ticketService.uploadFiles(req.files);
   res.status(httpStatus.OK).send({ result });

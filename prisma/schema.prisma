@@ -19,7 +19,7 @@ model User {
   password   String?      @db.VarChar(255)
   mobile     String?      @unique @db.VarChar(20)
   status     UserStatus?
-  role       UserRole?
+  role       UserRole?    @default(USER)
   ticket     Ticket[]
   sections   Section[]
   comment    Comment[]
@@ -72,6 +72,7 @@ model Ticket {
   user       User?         @relation(fields: [userId], references: [id])
   sectionId  Int
   section    Section       @relation(fields: [sectionId], references: [id])
+  isActive   Boolean       @default(true)
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
 }

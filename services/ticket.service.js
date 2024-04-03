@@ -179,6 +179,19 @@ exports.getTicketById = async id => {
   return result;
 };
 
+exports.deleteTicket = async id => {
+  const result = await prisma.ticket.update({
+    where: {
+      id,
+    },
+    data: {
+      isActive: false,
+    },
+  });
+
+  return result;
+};
+
 exports.uploadFiles = async files => {
   const ticketFiles = [];
   if (typeof files === 'object') {

@@ -75,13 +75,23 @@ exports.getUserById = async id => {
 };
 
 exports.approveUserById = async payload => {
+  await prisma.user.update({
+    where: {
+      id: payload?.id,
+    },
+    data: {
+      sections: {
+        set: [],
+      },
+    },
+  });
   const result = await prisma.user.update({
     where: {
       id: payload?.id,
     },
     data: {
       status: 'APPROVED',
-      role: payload?.role || 'USER',
+      role: payload?.role,
       sections: {
         connect: payload.sectionsIds.map(sectionId => ({ id: sectionId })),
       },
