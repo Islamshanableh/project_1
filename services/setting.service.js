@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
 const httpStatus = require('http-status');
 const { Prisma } = require('@prisma/client');
@@ -9,11 +10,6 @@ exports.createSection = async payload => {
   let order = 0;
   if (!payload.order) {
     const findOrder = await prisma.section.findMany({
-      where: {
-        order: {
-          gte: payload.order,
-        },
-      },
       orderBy: {
         order: 'desc',
       },
@@ -67,11 +63,6 @@ exports.createCheckList = async payload => {
   let order = 0;
   if (!payload.order) {
     const findOrder = await prisma.checkList.findMany({
-      where: {
-        order: {
-          gte: payload.order,
-        },
-      },
       orderBy: {
         order: 'desc',
       },
@@ -121,11 +112,6 @@ exports.createMaterial = async payload => {
   let order = 0;
   if (!payload.order) {
     const findOrder = await prisma.checkList.findMany({
-      where: {
-        order: {
-          gte: payload.order,
-        },
-      },
       orderBy: {
         order: 'desc',
       },
@@ -363,11 +349,31 @@ exports.deleteMaterial = async id => {
 };
 
 exports.updateSection = async payload => {
+  let result;
   if (payload.order) {
+    const recordToChange = await prisma.section.findUnique({
+      where: {
+        id: payload.id,
+      },
+    });
+
+    result = await prisma.section.update({
+      where: {
+        id: payload.id,
+      },
+      data: {
+        order: payload.order,
+      },
+    });
+
     await prisma.section.updateMany({
       where: {
         order: {
           gte: payload.order,
+          lte: recordToChange.order,
+        },
+        id: {
+          not: recordToChange.id,
         },
       },
       data: {
@@ -376,9 +382,10 @@ exports.updateSection = async payload => {
         },
       },
     });
+    return result;
   }
 
-  const result = await prisma.section
+  result = await prisma.section
     .update({
       where: {
         id: payload.id,
@@ -420,11 +427,31 @@ exports.updateSection = async payload => {
 };
 
 exports.updateCheckList = async payload => {
+  let result;
   if (payload.order) {
+    const recordToChange = await prisma.checkList.findUnique({
+      where: {
+        id: payload.id,
+      },
+    });
+
+    result = await prisma.checkList.update({
+      where: {
+        id: payload.id,
+      },
+      data: {
+        order: payload.order,
+      },
+    });
+
     await prisma.checkList.updateMany({
       where: {
         order: {
           gte: payload.order,
+          lte: recordToChange.order,
+        },
+        id: {
+          not: recordToChange.id,
         },
       },
       data: {
@@ -433,8 +460,10 @@ exports.updateCheckList = async payload => {
         },
       },
     });
+    return result;
   }
-  const result = await prisma.checkList
+
+  result = await prisma.checkList
     .update({
       where: {
         id: payload.id,
@@ -476,11 +505,31 @@ exports.updateCheckList = async payload => {
 };
 
 exports.updateMaterial = async payload => {
+  let result;
   if (payload.order) {
+    const recordToChange = await prisma.material.findUnique({
+      where: {
+        id: payload.id,
+      },
+    });
+
+    result = await prisma.material.update({
+      where: {
+        id: payload.id,
+      },
+      data: {
+        order: payload.order,
+      },
+    });
+
     await prisma.material.updateMany({
       where: {
         order: {
           gte: payload.order,
+          lte: recordToChange.order,
+        },
+        id: {
+          not: recordToChange.id,
         },
       },
       data: {
@@ -489,8 +538,10 @@ exports.updateMaterial = async payload => {
         },
       },
     });
+    return result;
   }
-  const result = await prisma.material
+
+  result = await prisma.material
     .update({
       where: {
         id: payload.id,
