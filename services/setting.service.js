@@ -175,55 +175,6 @@ exports.getSectionList = async search => {
   const result = await prisma.section.findMany({
     where: {
       isActive: true,
-      OR: [
-        {
-          ticket: {
-            some: {
-              title: {
-                contains: search,
-              },
-            },
-          },
-        },
-        {
-          ticket: {
-            some: {
-              fields: {
-                path: '$.phone',
-                string_contains: search,
-              },
-            },
-          },
-        },
-        {
-          ticket: {
-            some: {
-              fields: {
-                path: '$.serialNoCharger',
-                string_contains: search,
-              },
-            },
-          },
-        },
-        {
-          ticket: {
-            some: {
-              fields: {
-                path: '$.serialNoPoint',
-                string_contains: search,
-              },
-            },
-          },
-        },
-
-        {
-          ticket: {
-            every: {
-              isActive: true,
-            },
-          },
-        },
-      ],
     },
     include: {
       ticket: {
