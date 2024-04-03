@@ -128,6 +128,9 @@ exports.getUserList = async status => {
     where: {
       status,
     },
+    include: {
+      sections: true,
+    },
   });
 
   return result;
