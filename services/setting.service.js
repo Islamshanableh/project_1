@@ -188,19 +188,19 @@ exports.getSectionList = async search => {
             {
               fields: {
                 path: '$.phone',
-                string_contains: search,
+                string_contains: search || '',
               },
             },
             {
               fields: {
                 path: '$.serialNoCharger',
-                string_contains: search,
+                string_contains: search || '',
               },
             },
             {
               fields: {
                 path: '$.serialNoPoint',
-                string_contains: search,
+                string_contains: search || '',
               },
             },
           ],
