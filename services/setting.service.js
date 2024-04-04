@@ -349,6 +349,7 @@ exports.deleteMaterial = async id => {
 };
 
 exports.updateSection = async payload => {
+  if (payload.order === 0) payload.order += 1;
   let result;
   if (payload.order) {
     const recordToChange = await prisma.section.findUnique({
@@ -366,22 +367,42 @@ exports.updateSection = async payload => {
       },
     });
 
-    await prisma.section.updateMany({
-      where: {
-        order: {
-          gte: payload.order,
-          lte: recordToChange.order,
+    if (recordToChange.order < payload.order) {
+      await prisma.section.updateMany({
+        where: {
+          order: {
+            gte: recordToChange.order,
+            lte: payload.order,
+          },
+          id: {
+            not: recordToChange.id,
+          },
         },
-        id: {
-          not: recordToChange.id,
+        data: {
+          order: {
+            decrement: 1,
+          },
         },
-      },
-      data: {
-        order: {
-          increment: 1,
+      });
+    } else {
+      await prisma.section.updateMany({
+        where: {
+          order: {
+            lte: recordToChange.order,
+            gte: payload.order,
+          },
+          id: {
+            not: recordToChange.id,
+          },
         },
-      },
-    });
+        data: {
+          order: {
+            increment: 1,
+          },
+        },
+      });
+    }
+
     return result;
   }
 
@@ -427,6 +448,7 @@ exports.updateSection = async payload => {
 };
 
 exports.updateCheckList = async payload => {
+  if (payload.order === 0) payload.order += 1;
   let result;
   if (payload.order) {
     const recordToChange = await prisma.checkList.findUnique({
@@ -444,22 +466,41 @@ exports.updateCheckList = async payload => {
       },
     });
 
-    await prisma.checkList.updateMany({
-      where: {
-        order: {
-          gte: payload.order,
-          lte: recordToChange.order,
+    if (recordToChange.order < payload.order) {
+      await prisma.checkList.updateMany({
+        where: {
+          order: {
+            gte: recordToChange.order,
+            lte: payload.order,
+          },
+          id: {
+            not: recordToChange.id,
+          },
         },
-        id: {
-          not: recordToChange.id,
+        data: {
+          order: {
+            decrement: 1,
+          },
         },
-      },
-      data: {
-        order: {
-          increment: 1,
+      });
+    } else {
+      await prisma.checkList.updateMany({
+        where: {
+          order: {
+            lte: recordToChange.order,
+            gte: payload.order,
+          },
+          id: {
+            not: recordToChange.id,
+          },
         },
-      },
-    });
+        data: {
+          order: {
+            increment: 1,
+          },
+        },
+      });
+    }
     return result;
   }
 
@@ -505,6 +546,7 @@ exports.updateCheckList = async payload => {
 };
 
 exports.updateMaterial = async payload => {
+  if (payload.order === 0) payload.order += 1;
   let result;
   if (payload.order) {
     const recordToChange = await prisma.material.findUnique({
@@ -522,22 +564,41 @@ exports.updateMaterial = async payload => {
       },
     });
 
-    await prisma.material.updateMany({
-      where: {
-        order: {
-          gte: payload.order,
-          lte: recordToChange.order,
+    if (recordToChange.order < payload.order) {
+      await prisma.material.updateMany({
+        where: {
+          order: {
+            gte: recordToChange.order,
+            lte: payload.order,
+          },
+          id: {
+            not: recordToChange.id,
+          },
         },
-        id: {
-          not: recordToChange.id,
+        data: {
+          order: {
+            decrement: 1,
+          },
         },
-      },
-      data: {
-        order: {
-          increment: 1,
+      });
+    } else {
+      await prisma.material.updateMany({
+        where: {
+          order: {
+            lte: recordToChange.order,
+            gte: payload.order,
+          },
+          id: {
+            not: recordToChange.id,
+          },
         },
-      },
-    });
+        data: {
+          order: {
+            increment: 1,
+          },
+        },
+      });
+    }
     return result;
   }
 
