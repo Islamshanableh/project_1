@@ -168,7 +168,7 @@ exports.getSectionList = async search => {
           OR: [
             {
               title: {
-                contains: search,
+                contains: search || '',
               },
             },
             {
