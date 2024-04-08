@@ -13,7 +13,11 @@ exports.createTicket = async payload => {
     data: {
       title: payload.title,
       fields: payload.fields,
-      sectionId: payload.sectionId,
+      section: {
+        connect: {
+          id: payload.sectionId,
+        },
+      },
       userId: payload.userId,
       media: {
         create: payload?.files?.map(file => ({ link: file })),
@@ -199,7 +203,11 @@ exports.uploadFiles = async files => {
       await Promise.all(
         files?.files?.map(async file => {
           const fileName = `${cuid()}-${file.name}`;
-          const upload = await uploadFile(file.data, `tickets/${fileName}`);
+          const upload = await uploadFile(
+            file.data,
+            `tickets/${fileName}`,
+            file?.mimetype,
+          );
           ticketFiles.push(upload?.Key);
         }),
       );
@@ -208,6 +216,7 @@ exports.uploadFiles = async files => {
       const upload = await uploadFile(
         files?.files?.data,
         `tickets/${fileName}`,
+        files?.files?.mimetype,
       );
       ticketFiles.push(upload?.Key);
     }

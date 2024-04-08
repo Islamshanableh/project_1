@@ -40,12 +40,13 @@ exports.PutSignedUrl = async (Key, ContentType) => {
   return presignedPUTURL;
 };
 
-exports.uploadFile = async (file, Key) => {
+exports.uploadFile = async (file, Key, ContentType) => {
   const s3obj = GetS3Obj();
   const uploadParams = {
     Bucket: config.aws.bucket_name,
     Body: file,
     Key,
+    ContentType,
   };
 
   try {
