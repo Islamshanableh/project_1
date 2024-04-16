@@ -113,14 +113,12 @@ exports.updateUserById = async payload => {
 };
 
 exports.deleteUserById = async id => {
-  const result = await prisma.user.update({
+  await prisma.user.update({
     where: {
       id,
     },
     data: { isActive: false },
   });
-
-  return result;
 };
 
 exports.getUserList = async status => {
