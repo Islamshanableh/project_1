@@ -107,3 +107,37 @@ exports.getMaterialList = catchAsync(async (req, res) => {
   const result = await settingService.getMaterialList();
   res.status(httpStatus.OK).send({ result });
 });
+
+exports.createMerchant = catchAsync(async (req, res) => {
+  const payload = req?.body;
+
+  const result = await settingService.createMerchant(payload);
+  res.status(httpStatus.OK).send({ result });
+});
+
+exports.updateMerchant = catchAsync(async (req, res) => {
+  const id = req?.query?.id;
+  const payload = req?.body;
+
+  const result = await settingService.updateMerchant({ ...payload, id });
+  res.status(httpStatus.OK).send({ result });
+});
+
+exports.getMerchantList = catchAsync(async (req, res) => {
+  const result = await settingService.getMerchantList();
+  res.status(httpStatus.OK).send({ result });
+});
+
+exports.deleteMerchant = catchAsync(async (req, res) => {
+  const id = req?.query?.id;
+
+  const result = await settingService.deleteMerchant(id);
+  res.status(httpStatus.OK).send({ result });
+});
+
+exports.getMerchantById = catchAsync(async (req, res) => {
+  const id = req?.query?.id;
+
+  const result = await settingService.getMerchantById(id);
+  res.status(httpStatus.OK).send({ result });
+});

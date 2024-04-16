@@ -60,6 +60,15 @@ model Material {
   updatedAt DateTime @updatedAt @db.Date
 }
 
+model Merchant {
+  id        Int      @id @default(autoincrement())
+  title     String   @unique @db.VarChar(320)
+  order     Int?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @db.Date
+}
+
 model Ticket {
   id         Int           @id @default(autoincrement())
   title      String

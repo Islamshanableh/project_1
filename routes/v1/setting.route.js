@@ -90,4 +90,31 @@ router
   .route('/material/list')
   .get(auth(routePermissions.ADMIN.read), settingController.getMaterialList);
 
+router
+  .route('/merchant')
+  .post(
+    auth(routePermissions.ADMIN.create),
+    validate(settingValidation.create),
+    settingController.createMerchant,
+  )
+  .get(
+    auth(routePermissions.ADMIN.read),
+    validate(settingValidation.getById),
+    settingController.getMerchantById,
+  )
+  .put(
+    auth(routePermissions.ADMIN.update),
+    validate(settingValidation.update),
+    settingController.updateMerchant,
+  )
+  .delete(
+    auth(routePermissions.ADMIN.update),
+    validate(settingValidation.getById),
+    settingController.deleteMerchant,
+  );
+
+router
+  .route('/merchant/list')
+  .get(auth(routePermissions.ADMIN.read), settingController.getMerchantList);
+
 module.exports = router;

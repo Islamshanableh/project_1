@@ -15,7 +15,7 @@ exports.createSection = async payload => {
       },
       take: 1,
     });
-    order = findOrder[0]?.order + 1;
+    order = findOrder[0]?.order || 0 + 1;
   }
 
   const result = await prisma.section
@@ -68,7 +68,7 @@ exports.createCheckList = async payload => {
       },
       take: 1,
     });
-    order = findOrder[0]?.order + 1;
+    order = findOrder[0]?.order || 0 + 1;
   }
   const result = await prisma.checkList
     .create({
@@ -117,7 +117,7 @@ exports.createMaterial = async payload => {
       },
       take: 1,
     });
-    order = findOrder[0]?.order + 1;
+    order = findOrder[0]?.order || 0 + 1;
   }
   const result = await prisma.material
     .create({
@@ -639,6 +639,190 @@ exports.updateMaterial = async payload => {
         }
       }
     });
+
+  return result;
+};
+
+exports.createMerchant = async payload => {
+  let order = 0;
+  if (!payload.order) {
+    const findOrder = await prisma.merchant.findMany({
+      orderBy: {
+        order: 'desc',
+      },
+      take: 1,
+    });
+    order = findOrder[0]?.order || 0 + 1;
+  }
+  const result = await prisma.merchant
+    .create({
+      data: { ...payload, order },
+    })
+    .catch(e => {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        if (typeof e === 'string') e = JSON.parse(e);
+        const errMeta = e?.meta;
+        if (e.code === 'P2002') {
+          if (
+            errMeta &&
+            errMeta?.target &&
+            typeof errMeta.target === 'string'
+          ) {
+            const arr = errMeta.target
+              .replaceAll('_', ' ')
+              .replace('key', '')
+              .concat('allready exists')
+              .split(' ');
+
+            arr.shift();
+            const msg = arr.join(' ');
+
+            throw new ApiError(httpStatus.BAD_REQUEST, msg);
+          }
+        } else if (e?.meta?.target && typeof e.meta.target === 'string') {
+          const msg = e?.meta?.target
+            .replaceAll('_', ' ')
+            .replace('key', '')
+            .concat('allready exists');
+          throw new ApiError(httpStatus.BAD_REQUEST, msg);
+        }
+      }
+    });
+
+  return result;
+};
+
+exports.getMerchantList = async () => {
+  const result = await prisma.merchant.findMany({
+    where: {
+      isActive: true,
+    },
+    orderBy: {
+      order: 'asc',
+    },
+  });
+
+  return result;
+};
+
+exports.getMerchantById = async id => {
+  console.log(id);
+  const result = await prisma.merchant.findFirst({
+    where: {
+      id,
+    },
+  });
+
+  return result;
+};
+
+exports.updateMerchant = async payload => {
+  if (payload.order === 0) payload.order += 1;
+  let result;
+  if (payload.order) {
+    const recordToChange = await prisma.merchant.findUnique({
+      where: {
+        id: payload.id,
+      },
+    });
+
+    result = await prisma.merchant.update({
+      where: {
+        id: payload.id,
+      },
+      data: {
+        order: payload.order,
+      },
+    });
+
+    if (recordToChange.order < payload.order) {
+      await prisma.merchant.updateMany({
+        where: {
+          order: {
+            gte: recordToChange.order,
+            lte: payload.order,
+          },
+          id: {
+            not: recordToChange.id,
+          },
+        },
+        data: {
+          order: {
+            decrement: 1,
+          },
+        },
+      });
+    } else {
+      await prisma.merchant.updateMany({
+        where: {
+          order: {
+            lte: recordToChange.order,
+            gte: payload.order,
+          },
+          id: {
+            not: recordToChange.id,
+          },
+        },
+        data: {
+          order: {
+            increment: 1,
+          },
+        },
+      });
+    }
+    return result;
+  }
+
+  result = await prisma.merchant
+    .update({
+      where: {
+        id: payload.id,
+      },
+      data: payload,
+    })
+    .catch(e => {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        if (typeof e === 'string') e = JSON.parse(e);
+        const errMeta = e?.meta;
+        if (e.code === 'P2002') {
+          if (
+            errMeta &&
+            errMeta?.target &&
+            typeof errMeta.target === 'string'
+          ) {
+            const arr = errMeta.target
+              .replaceAll('_', ' ')
+              .replace('key', '')
+              .concat('allready exists')
+              .split(' ');
+
+            arr.shift();
+            const msg = arr.join(' ');
+
+            throw new ApiError(httpStatus.BAD_REQUEST, msg);
+          }
+        } else if (e?.meta?.target && typeof e.meta.target === 'string') {
+          const msg = e?.meta?.target
+            .replaceAll('_', ' ')
+            .replace('key', '')
+            .concat('allready exists');
+          throw new ApiError(httpStatus.BAD_REQUEST, msg);
+        }
+      }
+    });
+
+  return result;
+};
+
+exports.deleteMerchant = async id => {
+  const result = await prisma.merchant.update({
+    where: {
+      id,
+    },
+    data: {
+      isActive: false,
+    },
+  });
 
   return result;
 };

@@ -7,6 +7,7 @@ const httpStatus = require('http-status');
 const { prisma } = require('./prisma.service');
 const ApiError = require('../utils/ApiError');
 const { uploadFile, deleteFile } = require('./common/aws.service');
+const config = require('../config/config');
 
 exports.createTicket = async payload => {
   const result = await prisma.ticket.create({
@@ -28,18 +29,27 @@ exports.createTicket = async payload => {
   return result;
 };
 
+const findArrayDifferences = (oldArr, newArr) => {
+  const oldIds = oldArr.map(obj => obj.id);
+  return newArr.filter(obj => !oldIds.includes(obj.id));
+};
+
 const findObjectDifferences = async (obj1, obj2) => {
   const differences = {};
+  const differencesArray = [];
 
   for (const key in obj1) {
     if (obj1.hasOwnProperty(key) && obj2.hasOwnProperty(key)) {
       if (Array.isArray(obj1[key]) && Array.isArray(obj2[key])) {
-        if (JSON.stringify(obj1[key]) !== JSON.stringify(obj2[key])) {
-          differences[key] = {
-            oldValue: obj1[key],
-            newValue: obj2[key],
-          };
-        }
+        const arrayDifferences = await findArrayDifferences(
+          obj1[key],
+          obj2[key],
+        );
+        arrayDifferences?.map(item => {
+          const newString = `Add ${item.value} to ${key} `;
+          differencesArray.push(newString);
+          return item;
+        });
       } else if (
         typeof obj1[key] === 'object' &&
         typeof obj2[key] === 'object'
@@ -50,12 +60,15 @@ const findObjectDifferences = async (obj1, obj2) => {
         );
         if (Object.keys(nestedDifferences).length > 0) {
           differences[key] = nestedDifferences;
+          differencesArray.push(...nestedDifferences);
         }
       } else if (obj1[key] !== obj2[key]) {
         differences[key] = {
           oldValue: obj1[key],
           newValue: obj2[key],
         };
+        const newString = `Change ${key} to ${obj2[key]}`;
+        differencesArray.push(newString);
       }
     }
   }
@@ -66,10 +79,12 @@ const findObjectDifferences = async (obj1, obj2) => {
         oldValue: 'new field added',
         newValue: obj2[key],
       };
+      const newString = `Add value ${obj2[key]} to ${key}`;
+      differencesArray.push(newString);
     }
   }
 
-  return differences;
+  return differencesArray;
 };
 
 exports.updateTicket = async (payload, userId) => {
@@ -87,13 +102,13 @@ exports.updateTicket = async (payload, userId) => {
   if (!findTicket) {
     throw new ApiError(httpStatus.FORBIDDEN, 'ticket not found');
   }
-  let differences = {};
+  let differences = [];
   const findDifferences = await findObjectDifferences(
     findTicket.fields,
     payload.fields,
   );
 
-  if (Object.keys(findDifferences).length > 0) {
+  if (findDifferences.length > 0) {
     differences = findDifferences;
   }
 
@@ -110,9 +125,24 @@ exports.updateTicket = async (payload, userId) => {
       oldSection: findTicket.section.title,
       newSection: findSection.title,
     };
+    const newString = `Change section from  ${findTicket.section.title} to ${findSection.title}`;
+    differences.push(newString);
   }
 
-  if (Object.keys(differences).length > 0) {
+  if (payload?.files?.length) {
+    payload?.files?.map(file => {
+      const newString = `Add file : ${config.aws.prefix}${file}`;
+      differences.push(newString);
+      return file;
+    });
+  }
+
+  if (payload.title && payload.title !== findTicket?.title) {
+    const newString = `Change title of ticket to ${payload.title}`;
+    differences.push(newString);
+  }
+
+  if (differences.length > 0) {
     await prisma.historyLog.create({
       data: {
         user: {
