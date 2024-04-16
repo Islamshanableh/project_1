@@ -59,9 +59,7 @@ router
     settingController.deleteCheckList,
   );
 
-router
-  .route('/checkList/list')
-  .get(auth(routePermissions.ADMIN.read), settingController.getCheckList);
+router.route('/checkList/list').get(auth(), settingController.getCheckList);
 
 router
   .route('/material')
@@ -86,9 +84,7 @@ router
     settingController.deleteMaterial,
   );
 
-router
-  .route('/material/list')
-  .get(auth(routePermissions.ADMIN.read), settingController.getMaterialList);
+router.route('/material/list').get(auth(), settingController.getMaterialList);
 
 router
   .route('/merchant')
@@ -113,8 +109,6 @@ router
     settingController.deleteMerchant,
   );
 
-router
-  .route('/merchant/list')
-  .get(auth(routePermissions.ADMIN.read), settingController.getMerchantList);
+router.route('/merchant/list').get(auth(), settingController.getMerchantList);
 
 module.exports = router;

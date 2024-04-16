@@ -232,7 +232,6 @@ exports.uploadFiles = async files => {
     if (files?.files?.length) {
       await Promise.all(
         files?.files?.map(async file => {
-          console.log(file);
           const fileName = `${cuid()}-${file.name}`;
           const upload = await uploadFile(
             file.data,
@@ -244,7 +243,6 @@ exports.uploadFiles = async files => {
       );
     } else {
       const fileName = `${cuid()}-${files?.files?.name}`;
-      console.log(files?.files);
       const upload = await uploadFile(
         files?.files?.data,
         `tickets/${fileName}`,
