@@ -333,23 +333,18 @@ exports.updateComment = async payload => {
 };
 
 exports.deleteComment = async payload => {
-  const canUpdate = await this.canEditComment(
-    payload.userId,
-    payload.commentId,
-  );
+  // const canUpdate = await this.canEditComment(
+  //   payload.userId,
+  //   payload.commentId,
+  // );
 
-  if (canUpdate) {
-    const comment = await prisma.comment.update({
-      where: {
-        id: payload.commentId,
-      },
-      data: {
-        isActive: false,
-        isDeleted: true,
-      },
-    });
-
-    return comment;
-  }
-  throw new ApiError(httpStatus.FORBIDDEN, "you can't delete this comment");
+  await prisma.comment.update({
+    where: {
+      id: payload.commentId,
+    },
+    data: {
+      isActive: false,
+      isDeleted: true,
+    },
+  });
 };

@@ -43,7 +43,7 @@ router
 router
   .route('/comment')
   .delete(
-    auth(),
+    auth(routePermissions.ADMIN.update),
     validate(ticketValidation.getById),
     ticketController.deleteComment,
   )
