@@ -124,6 +124,7 @@ exports.deleteUserById = async id => {
 exports.getUserList = async status => {
   const result = await prisma.user.findMany({
     where: {
+      isActive: true,
       status,
     },
     include: {
