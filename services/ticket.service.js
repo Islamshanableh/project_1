@@ -39,7 +39,7 @@ const findObjectDifferences = async (obj1, obj2) => {
   const differencesArray = [];
 
   for (const key in obj1) {
-    if (obj1.hasOwnProperty(key) && obj2.hasOwnProperty(key)) {
+    if (obj1?.hasOwnProperty(key) && obj2?.hasOwnProperty(key)) {
       if (Array.isArray(obj1[key]) && Array.isArray(obj2[key])) {
         const arrayDifferences = await findArrayDifferences(
           obj1[key],
@@ -74,7 +74,7 @@ const findObjectDifferences = async (obj1, obj2) => {
   }
 
   for (const key in obj2) {
-    if (!obj1.hasOwnProperty(key)) {
+    if (!obj1?.hasOwnProperty(key)) {
       differences[key] = {
         oldValue: 'new field added',
         newValue: obj2[key],
