@@ -58,4 +58,12 @@ router
     ticketController.updateComment,
   );
 
+router
+  .route('/archive')
+  .put(
+    auth(routePermissions.ADMIN.update),
+    validate(ticketValidation.getById),
+    ticketController.archivedTicket,
+  );
+
 module.exports = router;

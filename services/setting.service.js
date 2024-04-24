@@ -190,6 +190,7 @@ exports.getSectionList = async search => {
               },
             },
           ],
+          isArchived: search ? undefined : false,
           isActive: true,
         },
         include: {

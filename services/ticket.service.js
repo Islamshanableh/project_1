@@ -348,3 +348,16 @@ exports.deleteComment = async payload => {
     },
   });
 };
+
+exports.archivedTicket = async id => {
+  const result = await prisma.ticket.update({
+    where: {
+      id,
+    },
+    data: {
+      isArchived: true,
+    },
+  });
+
+  return result;
+};
