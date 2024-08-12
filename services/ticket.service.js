@@ -207,6 +207,12 @@ exports.getTicketById = async id => {
           },
         },
       },
+      subTickets: {
+        where: {
+          isActive: true,
+          isArchived: false,
+        },
+      },
     },
   });
 
@@ -351,6 +357,161 @@ exports.deleteComment = async payload => {
 
 exports.archivedTicket = async id => {
   const result = await prisma.ticket.update({
+    where: {
+      id,
+    },
+    data: {
+      isArchived: true,
+    },
+  });
+
+  return result;
+};
+
+// ==========================================================
+// subTicket
+
+exports.createSubTicket = async payload => {
+  const result = await prisma.subTicket.create({
+    data: {
+      title: payload.title,
+      fields: payload.fields,
+      ticket: {
+        connect: {
+          id: payload.ticketId,
+        },
+      },
+      userId: payload.userId,
+      media: {
+        create: payload?.files?.map(file => ({ link: file })),
+      },
+    },
+  });
+
+  return result;
+};
+
+exports.updateSubTicket = async (payload, userId) => {
+  const findTicket = await prisma.subTicket.findUnique({
+    where: { id: payload?.id },
+  });
+  if (!findTicket) {
+    throw new ApiError(httpStatus.FORBIDDEN, 'sub ticket not found');
+  }
+  let differences = [];
+  const findDifferences = await findObjectDifferences(
+    findTicket.fields,
+    payload.fields,
+  );
+
+  if (findDifferences.length > 0) {
+    differences = findDifferences;
+  }
+
+  if (payload?.files?.length) {
+    payload?.files?.map(file => {
+      const newString = `Add file : ${config.aws.prefix}${file}`;
+      differences.push(newString);
+      return file;
+    });
+  }
+
+  if (payload.title && payload.title !== findTicket?.title) {
+    const newString = `Change title of ticket to ${payload.title}`;
+    differences.push(newString);
+  }
+
+  if (differences.length > 0) {
+    await prisma.historyLog.create({
+      data: {
+        user: {
+          connect: {
+            id: userId,
+          },
+        },
+        ticket: {
+          connect: {
+            id: findTicket.ticketId,
+          },
+        },
+        subTicket: {
+          connect: {
+            id: payload?.id,
+          },
+        },
+        differences,
+      },
+    });
+  }
+
+  const result = await prisma.subTicket.update({
+    where: {
+      id: payload.id,
+    },
+    data: {
+      title: payload.title,
+      fields: payload.fields,
+      ticketId: payload.ticketId,
+      userId: payload.userId,
+      media: {
+        create: payload?.files?.map(file => ({ link: file })),
+      },
+    },
+  });
+
+  return result;
+};
+
+exports.getSubTicketById = async id => {
+  const result = await prisma.subTicket.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      comment: {
+        where: {
+          isActive: true,
+          isDeleted: false,
+        },
+      },
+      media: {
+        where: {
+          isActive: true,
+          isDeleted: false,
+        },
+      },
+      historyLog: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return result;
+};
+
+exports.deleteSubTicket = async id => {
+  const result = await prisma.subTicket.update({
+    where: {
+      id,
+    },
+    data: {
+      isActive: false,
+    },
+  });
+
+  return result;
+};
+
+exports.archivedSubTicket = async id => {
+  const result = await prisma.subTicket.update({
     where: {
       id,
     },

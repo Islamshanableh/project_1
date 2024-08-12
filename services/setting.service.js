@@ -226,6 +226,46 @@ exports.getSectionList = async search => {
               },
             },
           },
+          subTickets: {
+            where: {
+              isActive: true,
+              isArchived: false,
+            },
+            include: {
+              comment: {
+                where: {
+                  isActive: true,
+                  isDeleted: false,
+                },
+                include: {
+                  user: {
+                    select: {
+                      id: true,
+                      firstName: true,
+                      lastName: true,
+                    },
+                  },
+                },
+              },
+              media: {
+                where: {
+                  isActive: true,
+                  isDeleted: false,
+                },
+              },
+              historyLog: {
+                include: {
+                  user: {
+                    select: {
+                      id: true,
+                      firstName: true,
+                      lastName: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       },
     },
@@ -243,6 +283,19 @@ exports.getSectionList = async search => {
             itemMedia.link = `${config.aws.prefix}${itemMedia.link}`;
           }
           return itemMedia;
+        });
+      }
+      if (itemTicket?.subTickets?.length) {
+        itemTicket.subTickets.map(async subTicket => {
+          if (subTicket?.media?.length) {
+            subTicket?.media?.map(async itemMedia => {
+              if (itemMedia?.link) {
+                itemMedia.link = `${config.aws.prefix}${itemMedia.link}`;
+              }
+              return itemMedia;
+            });
+          }
+          return subTicket;
         });
       }
       return itemTicket;

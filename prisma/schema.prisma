@@ -24,6 +24,7 @@ model User {
   sections   Section[]
   comment    Comment[]
   historyLog HistoryLog[]
+  subTickets SubTicket[]
   isActive   Boolean      @default(true)
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt @db.Date
@@ -81,6 +82,25 @@ model Ticket {
   user       User?         @relation(fields: [userId], references: [id])
   sectionId  Int
   section    Section       @relation(fields: [sectionId], references: [id])
+  subTickets SubTicket[]
+  isActive   Boolean       @default(true)
+  isArchived Boolean       @default(false)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+}
+
+model SubTicket {
+  id         Int           @id @default(autoincrement())
+  title      String
+  fields     Json?
+  media      Media[]
+  comment    Comment[]
+  historyLog HistoryLog[]
+  status     TicketStatus? @default(PENDING)
+  userId     Int?
+  user       User?         @relation(fields: [userId], references: [id])
+  ticketId   Int
+  ticket     Ticket        @relation(fields: [ticketId], references: [id])
   isActive   Boolean       @default(true)
   isArchived Boolean       @default(false)
   createdAt  DateTime      @default(now())
@@ -88,40 +108,46 @@ model Ticket {
 }
 
 model Media {
-  id        Int      @id @default(autoincrement())
-  link      String?  @db.LongText
-  ticketId  Int
-  ticket    Ticket   @relation(fields: [ticketId], references: [id])
-  isActive  Boolean  @default(true)
-  isDeleted Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int        @id @default(autoincrement())
+  link        String?    @db.LongText
+  ticketId    Int?
+  ticket      Ticket?    @relation(fields: [ticketId], references: [id])
+  subTicket   SubTicket? @relation(fields: [subTicketId], references: [id])
+  subTicketId Int?
+  isActive    Boolean    @default(true)
+  isDeleted   Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
-  content   String   @db.LongText
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  ticketId  Int
-  ticket    Ticket   @relation(fields: [ticketId], references: [id])
-  isDeleted Boolean  @default(false)
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int        @id @default(autoincrement())
+  content     String     @db.LongText
+  userId      Int
+  user        User       @relation(fields: [userId], references: [id])
+  ticketId    Int?
+  ticket      Ticket?    @relation(fields: [ticketId], references: [id])
+  subTicket   SubTicket? @relation(fields: [subTicketId], references: [id])
+  subTicketId Int?
+  isDeleted   Boolean    @default(false)
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 model HistoryLog {
-  id          Int      @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   differences Json?
   userId      Int
-  user        User     @relation(fields: [userId], references: [id])
-  ticketId    Int
-  ticket      Ticket   @relation(fields: [ticketId], references: [id])
-  isDeleted   Boolean  @default(false)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  user        User       @relation(fields: [userId], references: [id])
+  ticketId    Int?
+  ticket      Ticket?    @relation(fields: [ticketId], references: [id])
+  subTicket   SubTicket? @relation(fields: [subTicketId], references: [id])
+  subTicketId Int?
+  isDeleted   Boolean    @default(false)
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 enum UserStatus {

@@ -66,4 +66,35 @@ router
     ticketController.archivedTicket,
   );
 
+router
+  .route('/sub-ticket')
+  .get(
+    auth(),
+    validate(ticketValidation.getById),
+    ticketController.getSubTicketById,
+  )
+  .post(
+    auth(),
+    validate(ticketValidation.createSubTicket),
+    ticketController.createSubTicket,
+  )
+  .put(
+    auth(),
+    validate(ticketValidation.updateSubTicket),
+    ticketController.updateSubTicket,
+  )
+  .delete(
+    auth(routePermissions.ADMIN.update),
+    validate(ticketValidation.getById),
+    ticketController.deleteSubTicket,
+  );
+
+router
+  .route('/archive/sub-ticket')
+  .put(
+    auth(routePermissions.ADMIN.update),
+    validate(ticketValidation.getById),
+    ticketController.archivedSubTicket,
+  );
+
 module.exports = router;

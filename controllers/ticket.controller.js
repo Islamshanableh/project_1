@@ -63,3 +63,33 @@ exports.archivedTicket = catchAsync(async (req, res) => {
   const result = await ticketService.archivedTicket(req?.query?.id);
   res.status(httpStatus.OK).send({ result });
 });
+
+// =====================================================
+// subTicket
+exports.createSubTicket = catchAsync(async (req, res) => {
+  const result = await ticketService.createSubTicket(req.body);
+  res.status(httpStatus.OK).send({ result });
+});
+
+exports.updateSubTicket = catchAsync(async (req, res) => {
+  const payload = req?.body;
+  const userId = req?.user?.sub?.id;
+
+  const result = await ticketService.updateSubTicket(payload, userId);
+  res.status(httpStatus.OK).send({ result });
+});
+
+exports.getSubTicketById = catchAsync(async (req, res) => {
+  const result = await ticketService.getSubTicketById(req?.query?.id);
+  res.status(httpStatus.OK).send({ result });
+});
+
+exports.deleteSubTicket = catchAsync(async (req, res) => {
+  const result = await ticketService.deleteSubTicket(req?.query?.id);
+  res.status(httpStatus.OK).send({ result });
+});
+
+exports.archivedSubTicket = catchAsync(async (req, res) => {
+  const result = await ticketService.archivedSubTicket(req?.query?.id);
+  res.status(httpStatus.OK).send({ result });
+});
