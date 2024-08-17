@@ -113,11 +113,21 @@ exports.updateUserById = async payload => {
 };
 
 exports.deleteUserById = async id => {
+  const userInfo = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+  });
+
   await prisma.user.update({
     where: {
       id,
     },
-    data: { isActive: false },
+    data: {
+      isActive: false,
+      email: `${userInfo?.email}-${Date.now()}`,
+      mobile: `${userInfo?.mobile}-${Date.now()}`,
+    },
   });
 };
 
