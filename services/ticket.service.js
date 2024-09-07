@@ -368,6 +368,21 @@ exports.archivedTicket = async id => {
   return result;
 };
 
+exports.archivedMultiTickets = async ids => {
+  const result = await prisma.ticket.updateMany({
+    where: {
+      id: {
+        in: ids,
+      },
+    },
+    data: {
+      isArchived: true,
+    },
+  });
+
+  return result;
+};
+
 // ==========================================================
 // subTicket
 

@@ -60,6 +60,10 @@ exports.deleteFile = catchAsync(async (req, res) => {
 });
 
 exports.archivedTicket = catchAsync(async (req, res) => {
+  if (req?.body?.ids?.length) {
+    const result = await ticketService.archivedMultiTickets(req?.body?.ids);
+    return res.status(httpStatus.OK).send({ result });
+  }
   const result = await ticketService.archivedTicket(req?.query?.id);
   res.status(httpStatus.OK).send({ result });
 });

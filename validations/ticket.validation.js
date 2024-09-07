@@ -12,7 +12,10 @@ exports.createTicket = {
 
 exports.getById = {
   query: Joi.object().keys({
-    id: Joi.number().required(),
+    id: Joi.number(),
+  }),
+  body: Joi.object().keys({
+    ids: Joi.array(),
   }),
 };
 
