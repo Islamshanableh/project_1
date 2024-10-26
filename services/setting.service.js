@@ -307,6 +307,143 @@ exports.getSectionList = async search => {
   return result;
 };
 
+exports.getSectionListFilter = async payload => {
+  const filterObj = {
+    fields: {
+      path: `$.${payload.column}`,
+      string_contains: payload.value,
+    },
+  };
+
+  console.log(filterObj);
+
+  const result = await prisma.section.findMany({
+    where: {
+      isActive: true,
+    },
+    include: {
+      ticket: {
+        where: {
+          fields: {
+            path: `$.${payload.column}`,
+            string_contains: payload.value,
+          },
+          isActive: true,
+        },
+        include: {
+          comment: {
+            where: {
+              isActive: true,
+              isDeleted: false,
+            },
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                },
+              },
+            },
+          },
+          media: {
+            where: {
+              isActive: true,
+              isDeleted: false,
+            },
+          },
+          historyLog: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                },
+              },
+            },
+          },
+          subTickets: {
+            where: {
+              isActive: true,
+              isArchived: false,
+            },
+            include: {
+              comment: {
+                where: {
+                  isActive: true,
+                  isDeleted: false,
+                },
+                include: {
+                  user: {
+                    select: {
+                      id: true,
+                      firstName: true,
+                      lastName: true,
+                    },
+                  },
+                },
+              },
+              media: {
+                where: {
+                  isActive: true,
+                  isDeleted: false,
+                },
+              },
+              historyLog: {
+                include: {
+                  user: {
+                    select: {
+                      id: true,
+                      firstName: true,
+                      lastName: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      order: 'asc',
+    },
+  });
+
+  result?.map(async item => {
+    const newItem = item;
+    newItem?.ticket?.map(async itemTicket => {
+      if (itemTicket?.media?.length) {
+        itemTicket?.media?.map(async itemMedia => {
+          if (itemMedia?.link) {
+            itemMedia.link = `${config.aws.prefix}${itemMedia.link}`;
+          }
+          return itemMedia;
+        });
+      }
+      if (itemTicket?.subTickets?.length) {
+        itemTicket.subTickets.map(async subTicket => {
+          if (subTicket?.media?.length) {
+            subTicket?.media?.map(async itemMedia => {
+              if (itemMedia?.link) {
+                itemMedia.link = `${config.aws.prefix}${itemMedia.link}`;
+              }
+              return itemMedia;
+            });
+          }
+          return subTicket;
+        });
+      }
+      return itemTicket;
+    });
+
+    return item;
+  });
+
+  return result;
+};
+
 exports.getCheckList = async () => {
   const result = await prisma.checkList.findMany({
     where: {

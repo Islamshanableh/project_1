@@ -33,6 +33,21 @@ router
 router.route('/upload').post(auth(), ticketController.uploadFilesTicket);
 
 router
+  .route('/move')
+  .put(
+    auth(),
+    validate(ticketValidation.moveTickets),
+    ticketController.moveTickets,
+  );
+router
+  .route('/color')
+  .put(
+    auth(),
+    validate(ticketValidation.changeColorTickets),
+    ticketController.changeColorTickets,
+  );
+
+router
   .route('/file')
   .delete(
     auth(),

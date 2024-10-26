@@ -232,6 +232,41 @@ exports.deleteTicket = async id => {
   return result;
 };
 
+exports.moveTickets = async payload => {
+  const result = await prisma.ticket.updateMany({
+    where: {
+      id: { in: payload.ids },
+    },
+    data: {
+      sectionId: payload.sectionId,
+    },
+  });
+
+  return result;
+};
+
+exports.changeColorTickets = async payload => {
+  const findTickets = await prisma.ticket.findMany({
+    where: {
+      id: { in: payload.ids },
+    },
+  });
+
+  if (findTickets?.length) {
+    for await (const ticket of findTickets) {
+      ticket.fields.color = payload.color;
+      await prisma.ticket.update({
+        where: {
+          id: ticket.id,
+        },
+        data: {
+          fields: ticket.fields,
+        },
+      });
+    }
+  }
+};
+
 exports.uploadFiles = async files => {
   const ticketFiles = [];
   if (typeof files === 'object') {

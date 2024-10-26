@@ -98,6 +98,12 @@ exports.getSectionList = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ result });
 });
 
+exports.getSectionListFilter = catchAsync(async (req, res) => {
+  const payload = req?.body;
+  const result = await settingService.getSectionListFilter(payload);
+  res.status(httpStatus.OK).send({ result });
+});
+
 exports.getCheckList = catchAsync(async (req, res) => {
   const result = await settingService.getCheckList();
   res.status(httpStatus.OK).send({ result });

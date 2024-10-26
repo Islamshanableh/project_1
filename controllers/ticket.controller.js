@@ -28,6 +28,16 @@ exports.deleteTicket = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ result });
 });
 
+exports.moveTickets = catchAsync(async (req, res) => {
+  const result = await ticketService.moveTickets(req.body);
+  res.status(httpStatus.OK).send({ result });
+});
+
+exports.changeColorTickets = catchAsync(async (req, res) => {
+  const result = await ticketService.changeColorTickets(req.body);
+  res.status(httpStatus.OK).send({ result });
+});
+
 exports.uploadFilesTicket = catchAsync(async (req, res) => {
   const result = await ticketService.uploadFiles(req.files);
   res.status(httpStatus.OK).send({ result });

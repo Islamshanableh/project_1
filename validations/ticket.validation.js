@@ -30,6 +30,20 @@ exports.update = {
   }),
 };
 
+exports.moveTickets = {
+  body: Joi.object().keys({
+    ids: Joi.array().items(Joi.number().required()).required(),
+    sectionId: Joi.number().required(),
+  }),
+};
+
+exports.changeColorTickets = {
+  body: Joi.object().keys({
+    ids: Joi.array().items(Joi.number().required()).required(),
+    color: Joi.string().required(),
+  }),
+};
+
 exports.createComment = {
   body: Joi.object().keys({
     content: Joi.string().required(),

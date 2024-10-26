@@ -25,6 +25,13 @@ exports.updateSection = {
   }),
 };
 
+exports.getSectionListFilter = {
+  body: Joi.object().keys({
+    column: Joi.string().required(),
+    value: Joi.string().required(),
+  }),
+};
+
 exports.update = {
   body: Joi.object().keys({
     title: Joi.string(),

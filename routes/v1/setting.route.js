@@ -37,6 +37,14 @@ router
 router.route('/section/list').get(auth(), settingController.getSectionList);
 
 router
+  .route('/section/list/filter')
+  .post(
+    auth(),
+    validate(settingValidation.getSectionListFilter),
+    settingController.getSectionListFilter,
+  );
+
+router
   .route('/checkList')
   .post(
     auth(routePermissions.ADMIN.create),
