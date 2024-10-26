@@ -308,15 +308,6 @@ exports.getSectionList = async search => {
 };
 
 exports.getSectionListFilter = async payload => {
-  const filterObj = {
-    fields: {
-      path: `$.${payload.column}`,
-      string_contains: payload.value,
-    },
-  };
-
-  console.log(filterObj);
-
   const result = await prisma.section.findMany({
     where: {
       isActive: true,
