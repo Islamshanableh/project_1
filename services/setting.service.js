@@ -308,19 +308,27 @@ exports.getSectionList = async search => {
 };
 
 exports.getSectionListFilter = async payload => {
+  let filter = {
+    fields: {
+      path: `$.${payload.column}`,
+      string_contains: payload.value,
+    },
+    isActive: true,
+  };
+  if (payload?.column === 'title') {
+    filter = {
+      title: {
+        contains: payload.value,
+      },
+    };
+  }
   const result = await prisma.section.findMany({
     where: {
       isActive: true,
     },
     include: {
       ticket: {
-        where: {
-          fields: {
-            path: `$.${payload.column}`,
-            string_contains: payload.value,
-          },
-          isActive: true,
-        },
+        where: filter,
         include: {
           comment: {
             where: {
