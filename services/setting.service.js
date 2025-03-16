@@ -322,6 +322,15 @@ exports.getSectionListFilter = async payload => {
       },
     };
   }
+  if (payload?.column === 'rate') {
+    filter = {
+      fields: {
+        path: `$.rate`,
+        equals: Number(payload.value),
+      },
+      isActive: true,
+    };
+  }
   const result = await prisma.section.findMany({
     where: {
       isActive: true,
